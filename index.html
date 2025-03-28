@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic RPS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            color: #fff;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            font-size: 3.5rem;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255,107,107,0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .score {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 2.5rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .choice-display {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .choice {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px rgba(255,255,255,0.05);
+        }
+
+        .choices {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(45deg, #6c5ce7, #a363d9);
+            border: none;
+            color: white;
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(108,92,231,0.3);
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(255,255,255,0.3),
+                transparent
+            );
+            transition: all 0.5s;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(108,92,231,0.5);
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        #result {
+            margin: 2rem 0;
+            font-size: 1.5rem;
+            min-height: 100px;
+            background: rgba(255,255,255,0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #reset {
+            background: linear-gradient(45deg, #ff7675, #d63031);
+            box-shadow: 0 10px 20px rgba(255,118,117,0.3);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .bg-blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(45deg, #6c5ce7, #ff6b6b);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            filter: blur(80px);
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .bg-blob:nth-child(1) {
+            top: -200px;
+            left: -200px;
+            animation: move 20s infinite;
+        }
+
+        .bg-blob:nth-child(2) {
+            bottom: -200px;
+            right: -200px;
+            animation: move 25s infinite reverse;
+        }
+
+        @keyframes move {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(100px, 100px); }
+            50% { transform: translate(-50px, 150px); }
+            75% { transform: translate(-100px, -50px); }
+        }
+
+        @media (max-width: 768px) {
+            .choice-display {
+                gap: 2rem;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .choice {
+                width: 120px;
+                height: 120px;
+                font-size: 3rem;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blob"></div>
+    <div class="bg-blob"></div>
+    
+    <div class="container">
+        <h1>Cosmic RPS</h1>
+        
+        <div class="score-board">
+            <div class="score">
+                <h2>🏆 <span id="wins">0</span></h2>
+            </div>
+            <div class="score">
+                <h2>💔 <span id="losses">0</span></h2>
+            </div>
+            <div class="score">
+                <h2>🤝 <span id="draws">0</span></h2>
+            </div>
+        </div>
+
+        <div class="choice-display">
+            <div class="choice" id="player-choice">🚀</div>
+            <div class="choice" id="computer-choice">🤖</div>
+        </div>
+
+        <div class="choices">
+            <button onclick="playGame('rock')">🪨 Rock</button>
+            <button onclick="playGame('paper')">📜 Paper</button>
+            <button onclick="playGame('scissors')">✂️ Scissors</button>
+        </div>
+
+        <div id="result"></div>
+        <button id="reset" onclick="resetGame()">🔁 Reset Game</button>
+    </div>
+
+    <script>
+        // Previous JavaScript code remains the same
+        let wins = 0, losses = 0, draws = 0;
+        const choices = ['rock', 'paper', 'scissors'];
+        const emojis = {
+            rock: '🪨',
+            paper: '📜',
+            scissors: '✂️'
+        };
+
+        function playGame(playerChoice) {
+            const computerChoice = choices[Math.floor(Math.random() * 3)];
+            
+            document.getElementById('player-choice').textContent = emojis[playerChoice];
+            document.getElementById('computer-choice').textContent = emojis[computerChoice];
+            
+            let result;
+            if (playerChoice === computerChoice) {
+                result = 'draw';
+                draws++;
+            } else if (
+                (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                (playerChoice === 'paper' && computerChoice === 'rock') ||
+                (playerChoice === 'scissors' && computerChoice === 'paper')
+            ) {
+                result = 'win';
+                wins++;
+            } else {
+                result = 'lose';
+                losses++;
+            }
+
+            document.getElementById('wins').textContent = wins;
+            document.getElementById('losses').textContent = losses;
+            document.getElementById('draws').textContent = draws;
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <div style="margin-bottom: 0.5rem">${getResultEmoji(result)}</div>
+                You chose ${playerChoice}<br>
+                Computer chose ${computerChoice}<br>
+                <strong style="font-size: 1.8rem">${result.toUpperCase()}!</strong>
+            `;
+            
+            resultDiv.style.animation = 'none';
+            setTimeout(() => {
+                resultDiv.style.animation = 'float 1.5s ease-in-out';
+            }, 10);
+        }
+
+        function getResultEmoji(result) {
+            return {
+                win: '🎉✨',
+                lose: '😢💫',
+                draw: '🤝🌌'
+            }[result];
+        }
+
+        function resetGame() {
+            wins = losses = draws = 0;
+            document.getElementById('wins').textContent = '0';
+            document.getElementById('losses').textContent = '0';
+            document.getElementById('draws').textContent = '0';
+            document.getElementById('result').textContent = '';
+            document.getElementById('player-choice').textContent = '🚀';
+            document.getElementById('computer-choice').textContent = '🤖';
+        }
+    </script>
+</body>
+</html>
